@@ -1,0 +1,45 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python packaging and build artifacts
+build/
+dist/
+site/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Test and coverage output
+.coverage
+.coverage.*
+.pytest_cache/
+htmlcov/
+
+# Type checking and lint caches
+.mypy_cache/
+.ruff_cache/
+.pyre/
+
+# Qt and UI generated files
+*.qrc.depends
+*.ui.py
+ui_*.py
+qrc_*.py
+
+# IDE and editor settings
+.idea/
+.vscode/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
