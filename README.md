@@ -27,24 +27,29 @@ Kable is currently planned around:
 
 - `Textual` for terminal UI layout, panels, input handling, and app
   structure
-- `Rich` for terminal rendering and styled output
 - Python-first application logic in `main`
 
 ## Install
 
-Installation instructions will be added once the initial Textual
-application scaffold and dependency choices are finalized.
+Install the current dependency set:
+
+```text
+pip install -r requirements.txt
+```
 
 ## Usage
 
-Usage instructions will be added once Kable has a runnable terminal app
-entry point.
+Run the current Textual app scaffold from the project root:
+
+```text
+python -m main.main
+```
 
 ## Repository Layout
 
 ```text
 .
-+-- main/          # Terminal app code, for now
++-- main/          # Terminal app code and local config
 +-- CHANGELOG.md  # Release history
 +-- CONTRIBUTING.md
 +-- LICENSE

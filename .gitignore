@@ -43,3 +43,6 @@ qrc_*.py
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Local state
+main/config.json
