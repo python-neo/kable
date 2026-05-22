@@ -1,0 +1,18 @@
+TextArea {
+    height: 1fr;
+}
+
+#status_bar {
+    height: 1;
+    dock: bottom;
+    padding: 0 1;
+}
+
+#status_clock {
+    width: 8;
+    content-align: right middle;
+}
+
+.spacer {
+    width: 1fr;
+}

@@ -28,12 +28,6 @@ htmlcov/
 .ruff_cache/
 .pyre/
 
-# Qt and UI generated files
-*.qrc.depends
-*.ui.py
-ui_*.py
-qrc_*.py
-
 # IDE and editor settings
 .idea/
 .vscode/
@@ -46,3 +40,6 @@ desktop.ini
 
 # Local state
 main/config.json
+
+# Textual local/dev state
+.textual/
