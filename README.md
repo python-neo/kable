@@ -18,7 +18,7 @@ Kable is a terminal IDE project published at
 ## Background
 
 Kable is at the beginning of development. The initial application code
-currently lives in `main` while the project structure settles.
+currently lives in `main`.
 
 The project direction is a Python terminal UI application built around
 editor workflows that feel familiar to VS Code users.
@@ -34,7 +34,9 @@ Kable is currently planned around:
 Install the current dependency set:
 
 ```text
-pip install -r requirements.txt
+uv venv
+.venv/Scripts/Activate
+uv pip install -r pyproject.toml
 ```
 
 ## Usage
@@ -48,13 +50,16 @@ python -m main.main
 ## Repository Layout
 
 ```text
-.
-+-- main/          # Terminal app code and local config
-+-- CHANGELOG.md  # Release history
+..
++-- main/
++-- .gitignore
++-- .python-version
++-- CHANGELOG.md
 +-- CONTRIBUTING.md
 +-- LICENSE
-+-- README.md     # Project overview
-+-- requirements.txt
++-- pyproject.toml
++-- README.md
++-- uv.lock
 ```
 
 ## Maintainers

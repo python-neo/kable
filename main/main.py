@@ -5,7 +5,7 @@ from json import JSONDecodeError
 from pathlib import Path
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal
-from textual.widgets import Header, Label, TextArea
+from textual.widgets import Label, TextArea
 import sys
 
 BASE_DIR = Path (__file__).resolve ().parent
@@ -14,7 +14,7 @@ class Kable (App) :
     CSS = (BASE_DIR / "styles.txt").read_text ()
     BINDINGS = [("ctrl+s", "save", "Save")]
 
-    def __init__ (self, file_path : Path | None = None) -> None :
+    def __init__ (self, file_path : Path) -> None :
         super ().__init__ ()
         self.config_path = (BASE_DIR / "config.json")
         self.config : dict = {}
@@ -24,6 +24,8 @@ class Kable (App) :
         if self.current_file is not None :
             try :
                 self.initial_text = self.current_file.read_text (encoding = "utf-8")
+            except PermissionError :
+                sys.exit ("Permission denied. Try running Kable with administrative privilages.")
             except (OSError, UnicodeError) :
                 sys.exit ("File not found or cannot be read.")
 
@@ -54,18 +56,28 @@ class Kable (App) :
         if self.current_file is None :
             return
         editor = self.query_one (TextArea)
-        self.current_file.write_text (editor.text, encoding = "utf-8")
+        try :
+            self.current_file.write_text (editor.text, encoding = "utf-8")
+        except PermissionError :
+            sys.exit ("Permission denied. Try running Kable with administrative privilages.")
 
     def update_clock (self) -> None :
         self.query_one ("#status_clock", Label).update (
             f"🕒 {datetime.now ().strftime ('%H:%M')}"
         )
 
+    def on_text_area_selection_changed (self) -> None :
+        editor = self.query_one (TextArea)
+        line = editor.cursor_location [0] + 1
+        column = editor.cursor_location [1] + 1
+        self.query_one ("#location", Label).update (f"{line}:{column}")
+
     def compose (self) -> ComposeResult :
-        yield Header ()
-        yield TextArea (self.initial_text)
+        yield TextArea (self.initial_text, show_line_numbers = True)
         with Horizontal (id = "status_bar") :
+            yield Label (str (self.current_file.name), id = "filename")
             yield Label ("", classes = "spacer")
+            yield Label ("1:1", id = "location")
             yield Label ("00:00", id = "status_clock")
 
 if __name__ == "__main__" :
