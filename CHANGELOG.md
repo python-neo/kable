@@ -11,6 +11,22 @@ project adheres to
 
 -
 
+## [0.2.1] - 2026-05-24
+
+### Added
+
+- Line numbers in main editor widget.
+- Modern uv based dependency workflow
+
+### Changed
+
+- Status bar to include the name of the current file and your location in it.
+- README
+
+### Fixed
+
+- PermissionDenied errors when opening or editing files that need admin access.
+
 ## [0.2.0] - 2026-05-22
 
 ### Added
@@ -42,7 +58,8 @@ project adheres to
 - Initial project documentation.
 - Repository published at <https://github.com/python-neo/kable>.
 
-[Unreleased]: https://github.com/python-neo/kable/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/python-neo/kable/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/python-neo/kable/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/python-neo/kable/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/python-neo/kable/compare/v0.0.1...v0.1.0
 [0.0.1]: https://github.com/python-neo/kable/releases/tag/v0.0.1
