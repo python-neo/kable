@@ -1,11 +1,38 @@
-TextArea {
+Screen {
+    layout: vertical;
+}
+
+#main {
+    height: 1fr;
+}
+
+#explorer {
+    width: 25;
+    height: 1fr;
+
+    background: transparent;
+    border-right: solid #333;
+}
+
+#editor {
+    width: 1fr;
     height: 1fr;
 }
 
 #status_bar {
     height: 1;
     dock: bottom;
+
     padding: 0 1;
+}
+
+#filename {
+    content-align: left middle;
+}
+
+#location {
+    width: 8;
+    content-align: center middle;
 }
 
 #status_clock {

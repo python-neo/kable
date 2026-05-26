@@ -8,6 +8,7 @@ Kable is a terminal IDE project published at
 ## Table of Contents
 
 - [Background](#background)
+- [Requirements](#requirements)
 - [Install](#install)
 - [Usage](#usage)
 - [Repository Layout](#repository-layout)
@@ -29,14 +30,28 @@ Kable is currently planned around:
   structure
 - Python-first application logic in `main`
 
+## Requirements
+
+- [Python 3.12+](https://www.python.org/downloads/release/python-31210/)
+- [A Nerd Font](https://www.nerdfonts.com/font-downloads)
+- [pip or uv](https://docs.astral.sh/uv/getting-started/installation/#__tabbed_1_2)
+
 ## Install
 
 Install the current dependency set:
 
-```text
+```bash
 uv venv
 .venv/Scripts/Activate
 uv pip install -r pyproject.toml
+```
+
+or with pip:
+
+```bash
+python -m venv venv
+venv/Scripts/Activate/
+pip install -r pyproject.toml
 ```
 
 ## Usage

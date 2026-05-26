@@ -1,12 +1,14 @@
+import sys
 from argparse import ArgumentParser
 from datetime import datetime
-from json import dump, load
-from json import JSONDecodeError
+from json import JSONDecodeError, dump, load
 from pathlib import Path
+
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal
 from textual.widgets import Label, TextArea
-import sys
+
+from .explorer import FileExplorer, get_icon
 
 BASE_DIR = Path (__file__).resolve ().parent
 
@@ -73,17 +75,25 @@ class Kable (App) :
         self.query_one ("#location", Label).update (f"{line}:{column}")
 
     def compose (self) -> ComposeResult :
-        yield TextArea (self.initial_text, show_line_numbers = True)
+        with Horizontal (id = "main") :
+            fe = FileExplorer (Path ("."))
+            fe.id = "explorer"
+            yield fe
+            yield TextArea (self.initial_text, show_line_numbers = True)
+            
         with Horizontal (id = "status_bar") :
-            yield Label (str (self.current_file.name), id = "filename")
+            yield Label (str (f"{get_icon (self.current_file)} {self.current_file.name}"), id = "filename")
             yield Label ("", classes = "spacer")
             yield Label ("1:1", id = "location")
             yield Label ("00:00", id = "status_clock")
 
-if __name__ == "__main__" :
+def main () :
     argparser = ArgumentParser ()
     argparser.add_argument ("filename")
     args = argparser.parse_args ()
 
     file_path = Path (args.filename).resolve ()
     Kable (file_path = file_path).run ()
+
+if __name__ == "__main__" :
+    main ()
