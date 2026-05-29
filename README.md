@@ -42,24 +42,26 @@ Install the current dependency set:
 
 ```bash
 uv venv
-.venv/Scripts/Activate
+.venv\Scripts\Activate
 uv pip install -r pyproject.toml
+uv pip install -e . --system
 ```
 
 or with pip:
 
 ```bash
 python -m venv venv
-venv/Scripts/Activate/
+venv\Scripts\Activate
 pip install -r pyproject.toml
+pip install -e .
 ```
+
+Note: If using uv, run as administrator.
 
 ## Usage
 
-Run the current Textual app scaffold from the project root:
-
-```text
-python -m main.main
+```bash
+kable <filename>
 ```
 
 ## Repository Layout
@@ -90,4 +92,4 @@ Release notes are tracked in [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 
-[MIT](LICENSE) (c) 2026 python-neo
+[MIT](LICENSE.md) (c) 2026 python-neo

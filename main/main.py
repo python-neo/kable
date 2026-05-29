@@ -8,13 +8,18 @@ from textual.app import App, ComposeResult
 from textual.containers import Horizontal
 from textual.widgets import Label, TextArea
 
-from .explorer import FileExplorer, get_icon
+from .explorer import Confirm, FileExplorer
+from .utils import checksum, get_icon
 
 BASE_DIR = Path (__file__).resolve ().parent
 
 class Kable (App) :
     CSS = (BASE_DIR / "styles.txt").read_text ()
-    BINDINGS = [("ctrl+s", "save", "Save")]
+    BINDINGS = [
+        ("ctrl+s", "save", "Save"),
+        ("ctrl+e", "toggle_explorer", "Toggle Explorer"),
+        ("ctrl+q", "quit", "Quit")
+    ]
 
     def __init__ (self, file_path : Path) -> None :
         super ().__init__ ()
@@ -45,10 +50,10 @@ class Kable (App) :
         self.update_clock ()
         self.set_interval (1, self.update_clock)
 
-    def _on_exit_app (self) :
+    def action_quit (self) :
         self.config ["theme"] = self.theme
         self.save_config ()
-        return super ()._on_exit_app ()
+        self.check_saved_app ()
 
     def save_config (self) -> None :
         with self.config_path.open ("w", encoding = "utf-8") as f :
@@ -62,6 +67,24 @@ class Kable (App) :
             self.current_file.write_text (editor.text, encoding = "utf-8")
         except PermissionError :
             sys.exit ("Permission denied. Try running Kable with administrative privilages.")
+
+    def check_saved_app (self) :
+        editor = self.query_one ("#editor", TextArea)
+        checksum_mod = checksum (editor.text)
+        checksum_file = checksum (self.current_file.read_text (encoding = "utf-8"))
+        if checksum_mod == checksum_file :
+            self.exit ()
+            return
+        self.push_screen (
+            Confirm ("Do you want to save changes before quitting?"), self.save_and_quit)
+
+    def save_and_quit (self, save : bool | None) -> None :
+        if save : self.action_save ()
+        self.exit ()
+
+    def action_toggle_explorer (self) -> None :
+        explorer = self.query_one ("#explorer", FileExplorer)
+        explorer.toggle_class ("hidden")
 
     def update_clock (self) -> None :
         self.query_one ("#status_clock", Label).update (
@@ -79,7 +102,7 @@ class Kable (App) :
             fe = FileExplorer (Path ("."))
             fe.id = "explorer"
             yield fe
-            yield TextArea (self.initial_text, show_line_numbers = True)
+            yield TextArea (self.initial_text, show_line_numbers = True, id = "editor")
             
         with Horizontal (id = "status_bar") :
             yield Label (str (f"{get_icon (self.current_file)} {self.current_file.name}"), id = "filename")
