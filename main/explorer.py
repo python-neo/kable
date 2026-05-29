@@ -1,57 +1,11 @@
 from pathlib import Path
 
-from textual.widgets import Tree
+from textual.containers import Horizontal, Vertical
+from textual.screen import ModalScreen
+from textual.widgets import Button, Label, Tree
 
+from .utils import get_icon
 
-def get_icon (file : Path) -> str :
-    if file.is_dir () :
-        return "󰉋"
-
-    name = file.name.lower ()
-    ext = file.suffix.lower ()
-
-    special = {
-        ".gitignore" : "󰊢",
-        ".gitkeep" : "󰊢",
-        "readme.md" : "󰍔",
-        "license" : "󰿃",
-        ".env" : "󰌆",
-        "package.json" : "󰎙",
-        "tsconfig.json" : "󰛦",
-    }
-
-    if name in special :
-        return special [name]
-
-    icons = {
-        ".py" : "󰌠",
-        ".js" : "󰌞",
-        ".ts" : "󰛦",
-        ".json" : "󰘦",
-        ".md" : "󰍔",
-        ".txt" : "󰈙",
-        ".html" : "󰌝",
-        ".css" : "󰌜",
-        ".scss" : "󰌜",
-        ".yaml" : "󰈙",
-        ".yml" : "󰈙",
-        ".toml" : "󰈙",
-        ".sh" : "󱆃",
-        ".bat" : "󰆍",
-        ".c" : "",
-        ".cpp" : "",
-        ".rs" : "󱘗",
-        ".go" : "󰟓",
-        ".java" : "󰬷",
-        ".php" : "󰌟",
-        ".png" : "󰋩",
-        ".jpg" : "󰋩",
-        ".jpeg" : "󰋩",
-        ".svg" : "󰜡",
-        ".zip" : "󰗄",
-    }
-
-    return icons.get (ext, "󰈔")
 
 class FileExplorer (Tree) :
     def __init__ (self, root : Path) : 
@@ -80,3 +34,18 @@ class FileExplorer (Tree) :
                                 severity = "error")
             else :
                 node.add_leaf (f"{get_icon (item)} {item.name}", data = item)
+
+class Confirm (ModalScreen [bool]) :
+    def __init__ (self, prompt : str) :
+        self.prompt = prompt
+        return super ().__init__ ()
+     
+    def compose (self) :
+        with Vertical (id = "confirm_box") :
+            yield Label (self.prompt)
+            with Horizontal (id = "confirm_buttons") :
+                yield Button ("Yes", id = "yes")
+                yield Button ("No", id = "no")
+
+    def on_button_pressed (self, event : Button.Pressed) -> None :
+        self.dismiss (event.button.id == "yes")

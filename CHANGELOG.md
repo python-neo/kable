@@ -11,6 +11,23 @@ project adheres to
 
 -
 
+## [0.3.1] - 2026-05-29
+
+### Added
+
+- `Ctrl+E` explorer toggle for showing and hiding the file explorer.
+- Save-before-quit confirmation modal for modified files.
+- Shared `utils.py` helpers for file icons and text checksums.
+- Overlay styling for confirmation dialogs.
+
+### Changed
+
+- Moved file icon lookup out of `explorer.py` and into `utils.py`.
+- Updated `README` install and usage instructions for the `kable`
+  command.
+- Updated Ruff formatting configuration to use CRLF line endings.
+- Updated `uv.lock` project metadata for the editable `0.3.0` package.
+
 ## [0.3.0] - 2026-05-26
 
 ### Added
@@ -74,7 +91,8 @@ project adheres to
 - Initial project documentation.
 - Repository published at <https://github.com/python-neo/kable>.
 
-[Unreleased]: https://github.com/python-neo/kable/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/python-neo/kable/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/python-neo/kable/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/python-neo/kable/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/python-neo/kable/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/python-neo/kable/compare/v0.1.0...v0.2.0

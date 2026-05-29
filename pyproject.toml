@@ -1,6 +1,6 @@
 [project]
 name = "kable"
-version = "0.3.0"
+version = "0.3.1"
 description = "A Textual-based terminal IDE written in Python."
 readme = "README.md"
 requires-python = ">=3.12"
@@ -53,4 +53,4 @@ ignore = ["E501"]
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
-line-ending = "lf"
+line-ending = "cr-lf"
