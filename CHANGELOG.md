@@ -11,6 +11,30 @@ project adheres to
 
 -
 
+## [0.4.0] - 2026-05-31
+
+### Added
+
+- Click-to-open file support in the file explorer.
+- Custom `FileClicked` message for explorer file selection events.
+- Built-in Textual header with project icon and live clock display.
+- Sidebar container for the file explorer.
+
+### Changed
+
+- Explorer now hides the root node and starts at the project contents.
+- Explorer directories now expand and collapse when selected.
+- Replaced the custom status bar clock with the built-in header clock.
+- Refactored save-before-quit handling to support file switching
+  without exiting the application.
+- Reworked the main layout to use a dedicated sidebar container.
+
+### Fixed
+
+- Prevented directories from being opened as editor files when selected.
+- Added type annotations for explorer tree nodes.
+- Outdated information in the README.
+
 ## [0.3.1] - 2026-05-29
 
 ### Added
@@ -91,7 +115,8 @@ project adheres to
 - Initial project documentation.
 - Repository published at <https://github.com/python-neo/kable>.
 
-[Unreleased]: https://github.com/python-neo/kable/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/python-neo/kable/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/python-neo/kable/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/python-neo/kable/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/python-neo/kable/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/python-neo/kable/compare/v0.2.0...v0.2.1

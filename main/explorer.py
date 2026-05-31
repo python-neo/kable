@@ -1,19 +1,26 @@
 from pathlib import Path
 
 from textual.containers import Horizontal, Vertical
+from textual.message import Message
 from textual.screen import ModalScreen
 from textual.widgets import Button, Label, Tree
+from textual.widgets.tree import TreeNode
 
 from .utils import get_icon
 
 
 class FileExplorer (Tree) :
+    class FileClicked (Message) :
+        def __init__ (self, path : Path) -> None :
+            self.path = path
+            super ().__init__ ()
+
     def __init__ (self, root : Path) : 
         super ().__init__ (root.name)
         self.root_path = root
 
     def on_mount (self) :
-        self.root.expand ()
+        self.show_root = False
         
         try :
             self.build_tree (self.root, self.root_path)
@@ -21,7 +28,7 @@ class FileExplorer (Tree) :
             self.notify (f"Permission denied to access folder {self.root}. Try running Kable with administrative privilages.", 
                          severity = "error")
 
-    def build_tree (self, node, path : Path) :
+    def build_tree (self, node : TreeNode, path : Path) :
         items = sorted (path.iterdir (), key = lambda x : (not x.is_dir (), x.name.lower ()))
 
         for item in items :
@@ -34,6 +41,15 @@ class FileExplorer (Tree) :
                                 severity = "error")
             else :
                 node.add_leaf (f"{get_icon (item)} {item.name}", data = item)
+
+    def on_tree_node_selected (self, event : Tree.NodeSelected) :
+        path = event.node.data
+        if not isinstance (path, Path) : return
+
+        if path.is_dir () :
+            event.node.toggle ()
+            return
+        self.post_message (self.FileClicked (path))
 
 class Confirm (ModalScreen [bool]) :
     def __init__ (self, prompt : str) :
