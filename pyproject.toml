@@ -36,7 +36,7 @@ Contributing = "https://github.com/python-neo/kable/blob/main/CONTRIBUTING.md"
 kable = "main.main:main"
 
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=82.0.1"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
