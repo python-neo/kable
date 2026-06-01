@@ -6,12 +6,17 @@ Screen {
     height: 1fr;
 }
 
-#explorer {
+#sidebar {
     width: 25;
     height: 1fr;
-
-    background: transparent;
     border-right: solid #333;
+}
+
+#explorer {
+    width: 100%;
+    height: 1fr;
+    margin-top: 1;
+    background: transparent;
 }
 
 #explorer.hidden {
@@ -25,9 +30,8 @@ Screen {
 
 #status_bar {
     height: 1;
-    dock: bottom;
-
     padding: 0 1;
+    background: $surface;
 }
 
 #filename {
@@ -37,11 +41,6 @@ Screen {
 #location {
     width: 8;
     content-align: center middle;
-}
-
-#status_clock {
-    width: 8;
-    content-align: right middle;
 }
 
 .spacer {
@@ -63,8 +62,8 @@ Confirm {
 
 #confirm_box Label {
     width: 1fr;
-    content-align: center middle;
     margin-bottom: 1;
+    content-align: center middle;
 }
 
 #confirm_buttons {

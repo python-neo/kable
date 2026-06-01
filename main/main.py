@@ -1,12 +1,12 @@
 import sys
 from argparse import ArgumentParser
-from datetime import datetime
 from json import JSONDecodeError, dump, load
 from pathlib import Path
+from typing import cast
 
 from textual.app import App, ComposeResult
-from textual.containers import Horizontal
-from textual.widgets import Label, TextArea
+from textual.containers import Horizontal, Vertical
+from textual.widgets import Header, Label, TextArea
 
 from .explorer import Confirm, FileExplorer
 from .utils import checksum, get_icon
@@ -47,13 +47,11 @@ class Kable (App) :
 
     def on_mount (self) -> None :
         self.theme = self.config.get ("theme", "textual-dark")
-        self.update_clock ()
-        self.set_interval (1, self.update_clock)
 
-    def action_quit (self) :
+    def action_quit (self, should_exit : bool = True) -> None :
         self.config ["theme"] = self.theme
         self.save_config ()
-        self.check_saved_app ()
+        self.check_saved_app (should_exit)
 
     def save_config (self) -> None :
         with self.config_path.open ("w", encoding = "utf-8") as f :
@@ -68,28 +66,26 @@ class Kable (App) :
         except PermissionError :
             sys.exit ("Permission denied. Try running Kable with administrative privilages.")
 
-    def check_saved_app (self) :
+    def check_saved_app (self, should_exit : bool) -> None :
         editor = self.query_one ("#editor", TextArea)
         checksum_mod = checksum (editor.text)
         checksum_file = checksum (self.current_file.read_text (encoding = "utf-8"))
         if checksum_mod == checksum_file :
-            self.exit ()
+            if should_exit :
+                self.exit ()
             return
         self.push_screen (
-            Confirm ("Do you want to save changes before quitting?"), self.save_and_quit)
+            Confirm ("Do you want to save changes before quitting?"),
+            callback = lambda save : self.handle_save_choice (save, should_exit),
+        )
 
-    def save_and_quit (self, save : bool | None) -> None :
+    def handle_save_choice (self, save : bool | None, should_exit : bool) -> None :
         if save : self.action_save ()
-        self.exit ()
+        if should_exit : self.exit ()
 
     def action_toggle_explorer (self) -> None :
         explorer = self.query_one ("#explorer", FileExplorer)
         explorer.toggle_class ("hidden")
-
-    def update_clock (self) -> None :
-        self.query_one ("#status_clock", Label).update (
-            f"🕒 {datetime.now ().strftime ('%H:%M')}"
-        )
 
     def on_text_area_selection_changed (self) -> None :
         editor = self.query_one (TextArea)
@@ -98,17 +94,27 @@ class Kable (App) :
         self.query_one ("#location", Label).update (f"{line}:{column}")
 
     def compose (self) -> ComposeResult :
+        yield Header (show_clock = True, time_format = "%H:%M", icon = "󰆍")
+
         with Horizontal (id = "main") :
-            fe = FileExplorer (Path ("."))
-            fe.id = "explorer"
-            yield fe
+            with Vertical (id = "sidebar") :
+                fe = FileExplorer (Path ("."))
+                fe.id = "explorer"
+                yield fe
+
             yield TextArea (self.initial_text, show_line_numbers = True, id = "editor")
             
         with Horizontal (id = "status_bar") :
-            yield Label (str (f"{get_icon (self.current_file)} {self.current_file.name}"), id = "filename")
+            yield Label (str (f"{get_icon (self.current_file)} {self.current_file.name}"), 
+                         id = "filename")
             yield Label ("", classes = "spacer")
             yield Label ("1:1", id = "location")
-            yield Label ("00:00", id = "status_clock")
+
+    def on_file_explorer_file_clicked (self, event : FileExplorer.FileClicked) -> None :
+        self.action_quit (should_exit = False)
+        self.current_file = cast (Path, event.path)
+        editor = self.query_one ("#editor", TextArea)
+        editor.text = self.current_file.read_text (encoding = "utf-8")
 
 def main () :
     argparser = ArgumentParser ()

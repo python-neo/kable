@@ -1,10 +1,10 @@
 [project]
 name = "kable"
-version = "0.3.1"
+version = "0.4.1"
 description = "A Textual-based terminal IDE written in Python."
 readme = "README.md"
 requires-python = ">=3.12"
-license = { file = "LICENSE" }
+license = { file = "LICENSE.md" }
 
 authors = [
     { name = "python-neo" }
@@ -32,11 +32,16 @@ Issues = "https://github.com/python-neo/kable/issues"
 Changelog = "https://github.com/python-neo/kable/blob/main/CHANGELOG.md"
 Contributing = "https://github.com/python-neo/kable/blob/main/CONTRIBUTING.md"
 
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.12.0",
+]
+
 [project.scripts]
 kable = "main.main:main"
 
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=82.0.1"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
@@ -48,7 +53,7 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
-ignore = ["E501"]
+ignore = ["E501", "E701"]
 
 [tool.ruff.format]
 quote-style = "double"

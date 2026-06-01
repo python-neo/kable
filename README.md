@@ -1,9 +1,6 @@
 # Kable
 
-> An early-stage terminal IDE written in Python.
-
-Kable is a terminal IDE project published at
-<https://github.com/python-neo/kable>.
+> A terminal IDE built in python.
 
 ## Table of Contents
 
@@ -18,11 +15,11 @@ Kable is a terminal IDE project published at
 
 ## Background
 
-Kable is at the beginning of development. The initial application code
-currently lives in `main`.
+Kable currently includes a text editor, file explorer, and configurable
+terminal interface built with Textual.
 
-The project direction is a Python terminal UI application built around
-editor workflows that feel familiar to VS Code users.
+The project is a terminal application built around
+editor workflows similar to those of VS Code and Neovim (LazyVim).
 
 Kable is currently planned around:
 
@@ -64,10 +61,19 @@ Note: If using uv, run as administrator.
 kable <filename>
 ```
 
+### Key Binds
+
+| Key    | Action          |
+| ------ | --------------- |
+| Ctrl+S | Save file       |
+| Ctrl+E | Toggle explorer |
+| Ctrl+Q | Quit            |
+
 ## Repository Layout
 
 ```text
 ..
++-- .github/
 +-- main/
 +-- .gitignore
 +-- .python-version
