@@ -1,6 +1,5 @@
 import sys
 from argparse import ArgumentParser
-from json import JSONDecodeError, dump, load
 from pathlib import Path
 from typing import cast
 
@@ -9,7 +8,7 @@ from textual.containers import Horizontal, Vertical
 from textual.widgets import Header, Label, TextArea
 
 from .explorer import Confirm, FileExplorer
-from .utils import checksum, get_icon
+from .utils import checksum, safe_file_read, safe_file_write, get_icon_and_file
 
 BASE_DIR = Path (__file__).resolve ().parent
 
@@ -26,24 +25,10 @@ class Kable (App) :
         self.config_path = (BASE_DIR / "config.json")
         self.config : dict = {}
         self.current_file = file_path
-        self.initial_text = ""
+        self.initial_text = safe_file_read (self.current_file)
 
-        if self.current_file is not None :
-            try :
-                self.initial_text = self.current_file.read_text (encoding = "utf-8")
-            except PermissionError :
-                sys.exit ("Permission denied. Try running Kable with administrative privilages.")
-            except (OSError, UnicodeError) :
-                sys.exit ("File not found or cannot be read.")
-
-        if self.config_path.exists () :
-            try :
-                with self.config_path.open ("r", encoding = "utf-8") as f :
-                    loaded = load (f)
-                if isinstance (loaded, dict) :
-                    self.config = loaded
-            except (OSError, JSONDecodeError) :
-                self.config = {}
+        loaded = safe_file_read (self.config_path)
+        self.config = loaded if isinstance (loaded, dict) else {}
 
     def on_mount (self) -> None :
         self.theme = self.config.get ("theme", "textual-dark")
@@ -54,22 +39,18 @@ class Kable (App) :
         self.check_saved_app (should_exit)
 
     def save_config (self) -> None :
-        with self.config_path.open ("w", encoding = "utf-8") as f :
-            dump (self.config, f, indent = 4)
+        safe_file_write (self.config_path, self.config, json = True)
 
     def action_save (self) -> None :
         if self.current_file is None :
             return
         editor = self.query_one (TextArea)
-        try :
-            self.current_file.write_text (editor.text, encoding = "utf-8")
-        except PermissionError :
-            sys.exit ("Permission denied. Try running Kable with administrative privilages.")
+        safe_file_write (self.current_file, editor.text)
 
     def check_saved_app (self, should_exit : bool) -> None :
         editor = self.query_one ("#editor", TextArea)
         checksum_mod = checksum (editor.text)
-        checksum_file = checksum (self.current_file.read_text (encoding = "utf-8"))
+        checksum_file = checksum (safe_file_read (self.current_file))
         if checksum_mod == checksum_file :
             if should_exit :
                 self.exit ()
@@ -105,14 +86,14 @@ class Kable (App) :
             yield TextArea (self.initial_text, show_line_numbers = True, id = "editor")
             
         with Horizontal (id = "status_bar") :
-            yield Label (str (f"{get_icon (self.current_file)} {self.current_file.name}"), 
-                         id = "filename")
+            yield Label (get_icon_and_file (self.current_file), id = "filename")
             yield Label ("", classes = "spacer")
             yield Label ("1:1", id = "location")
 
     def on_file_explorer_file_clicked (self, event : FileExplorer.FileClicked) -> None :
         self.action_quit (should_exit = False)
         self.current_file = cast (Path, event.path)
+        self.query_one ("#filename", Label).update (get_icon_and_file (self.current_file))
         editor = self.query_one ("#editor", TextArea)
         editor.text = self.current_file.read_text (encoding = "utf-8")
 

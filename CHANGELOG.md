@@ -11,6 +11,27 @@ project adheres to
 
 -
 
+## [0.4.1] - 2026-06-02
+
+### Added
+
+- Shared `safe_file_read` and `safe_file_write` helpers in `main/utils.py`.
+- Combined icon-and-filename formatting helper for file labels.
+
+### Changed
+
+- File explorer items now use the shared icon-and-filename helper.
+- The main editor and status bar now share the same file label
+  formatting.
+- File and config reads and writes now go through shared safe file
+  helpers.
+- `pyproject.toml` development status was bumped to beta and the Python
+  3.12 and terminal classifiers were removed.
+
+### Fixed
+
+- File and config load/write errors now use consistent shared handling.
+
 ## [0.4.0] - 2026-06-01
 
 ### Added
@@ -119,7 +140,8 @@ project adheres to
 - Initial project documentation.
 - Repository published at <https://github.com/python-neo/kable>.
 
-[Unreleased]: https://github.com/python-neo/kable/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/python-neo/kable/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/python-neo/kable/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/python-neo/kable/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/python-neo/kable/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/python-neo/kable/compare/v0.2.1...v0.3.0

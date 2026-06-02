@@ -1,11 +1,14 @@
 from hashlib import sha256
 from pathlib import Path
+from typing import Callable
+from json import JSONDecodeError, dump, load
+import sys
 
 
-def get_icon (file : Path) -> str :
-    if file.is_dir () : return "󰉋"
+def get_icon_and_file (file : Path) -> str :
+    if file.is_dir () : return file.name
 
-    name, ext = file.name.lower (), file.suffix.lower ()
+    name, ext = file.name, file.suffix.lower ()
 
     special = {
         ".gitignore" : "󰊢",
@@ -17,8 +20,8 @@ def get_icon (file : Path) -> str :
         "tsconfig.json" : "󰛦",
     }
 
-    if name in special :
-        return special [name]
+    if name.lower () in special :
+        return f"{special [name.lower ()]} {name}"
 
     icons = {
         ".py" : "󰌠", ".js" : "󰌞", ".ts" : "󰛦", ".json" : "󰘦",
@@ -30,7 +33,7 @@ def get_icon (file : Path) -> str :
         ".zip" : "󰗄",
     }
 
-    return icons.get (ext, "󰈔")
+    return f"{icons.get (ext, "󰈔")} {name}"
 
 def checksum (text : str | bytes) -> str :
     hasher, data = sha256 (), text.encode ("utf-8") if isinstance (text, str) else text
@@ -39,3 +42,29 @@ def checksum (text : str | bytes) -> str :
         hasher.update (data [start:start + 8192])
         
     return hasher.hexdigest ()
+
+def safe_file_read (file : Path, json : bool = False) :
+    if file is not None :
+        try :
+            if not json : return file.read_text (encoding = "utf-8")
+            with file.open ("r", encoding = "utf-8") as f : return load (f)
+
+        except PermissionError :
+            sys.exit ("Permission denied. Try running Kable with administrative privilages.")
+
+        except (OSError, JSONDecodeError, UnicodeError) :
+            sys.exit (f"ERROR: File {file} not found or cannot be read.") 
+
+    else :
+        return ""
+
+def safe_file_write (file : Path, data, json : bool = False) :
+    try :
+        if not json :
+            file.write_text (data, encoding = "utf-8")
+        with file.open ("w", encoding = "utf-8") as f : return dump (data, f, indent = 4)
+
+    except PermissionError :
+        sys.exit ("Permission denied. Try running Kable with administrative privilages.")
+    except (OSError, JSONDecodeError, UnicodeError) :
+        sys.exit (f"ERROR: File {file} cannot be written to.")

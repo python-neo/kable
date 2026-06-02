@@ -6,7 +6,7 @@ from textual.screen import ModalScreen
 from textual.widgets import Button, Label, Tree
 from textual.widgets.tree import TreeNode
 
-from .utils import get_icon
+from .utils import get_icon_and_file
 
 
 class FileExplorer (Tree) :
@@ -33,14 +33,14 @@ class FileExplorer (Tree) :
 
         for item in items :
             if item.is_dir () :
-                child = node.add (f"{get_icon (item)} {item.name}", expand = False, data = item)
+                child = node.add (get_icon_and_file (item), expand = False, data = item)
                 try :
                     self.build_tree (child, item)
                 except PermissionError :
                     self.notify (f"Permission denied to access folder {child}. Try running Kable with administrative privilages.", 
                                 severity = "error")
             else :
-                node.add_leaf (f"{get_icon (item)} {item.name}", data = item)
+                node.add_leaf (get_icon_and_file (item), data = item)
 
     def on_tree_node_selected (self, event : Tree.NodeSelected) :
         path = event.node.data
