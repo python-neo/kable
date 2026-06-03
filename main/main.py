@@ -1,23 +1,30 @@
-import sys
 from argparse import ArgumentParser
+from datetime import datetime
 from pathlib import Path
 from typing import cast
 
 from textual.app import App, ComposeResult
+from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
-from textual.widgets import Header, Label, TextArea
+from textual.widgets import Label, TextArea
 
 from .explorer import Confirm, FileExplorer
-from .utils import checksum, safe_file_read, safe_file_write, get_icon_and_file
+from .utils import (
+    checksum,
+    get_icon_and_file,
+    run_git_command,
+    safe_file_read,
+    safe_file_write,
+)
 
 BASE_DIR = Path (__file__).resolve ().parent
 
 class Kable (App) :
     CSS = (BASE_DIR / "styles.txt").read_text ()
     BINDINGS = [
-        ("ctrl+s", "save", "Save"),
-        ("ctrl+e", "toggle_explorer", "Toggle Explorer"),
-        ("ctrl+q", "quit", "Quit")
+        Binding  ("ctrl+s", "save", "Save"),
+        Binding ("ctrl+e", "toggle_explorer", "Toggle Explorer", priority = True),
+        Binding ("ctrl+q", "quit", "Quit")
     ]
 
     def __init__ (self, file_path : Path) -> None :
@@ -26,19 +33,32 @@ class Kable (App) :
         self.config : dict = {}
         self.current_file = file_path
         self.initial_text = safe_file_read (self.current_file)
+        self.current_branch = run_git_command ("branch", "--show-current")
 
-        loaded = safe_file_read (self.config_path)
+        loaded = safe_file_read (self.config_path, json = True)
         self.config = loaded if isinstance (loaded, dict) else {}
 
     def on_mount (self) -> None :
-        self.theme = self.config.get ("theme", "textual-dark")
+        self.theme = "textual-dark"
+        self.update_status_bar ()
+        self.update_clock ()
+        self.query_one ("#clock", Label).set_interval (1, self.update_clock)
+        if self.config.get ("explorer.hidden") :
+            self.query_one ("#sidebar", Vertical).add_class ("hidden")
+
+    def update_clock (self) -> None :
+        now = datetime.now ()
+        self.query_one ("#clock", Label).update (f"󱑂 {now.strftime ('%H:%M')}")
 
     def action_quit (self, should_exit : bool = True) -> None :
-        self.config ["theme"] = self.theme
         self.save_config ()
         self.check_saved_app (should_exit)
 
     def save_config (self) -> None :
+        self.config = {
+            "theme" : self.theme,
+            "explorer.hidden" : self.query_one ("#sidebar", Vertical).has_class ("hidden")
+        }
         safe_file_write (self.config_path, self.config, json = True)
 
     def action_save (self) -> None :
@@ -65,7 +85,7 @@ class Kable (App) :
         if should_exit : self.exit ()
 
     def action_toggle_explorer (self) -> None :
-        explorer = self.query_one ("#explorer", FileExplorer)
+        explorer = self.query_one ("#sidebar", Vertical)
         explorer.toggle_class ("hidden")
 
     def on_text_area_selection_changed (self) -> None :
@@ -75,8 +95,6 @@ class Kable (App) :
         self.query_one ("#location", Label).update (f"{line}:{column}")
 
     def compose (self) -> ComposeResult :
-        yield Header (show_clock = True, time_format = "%H:%M", icon = "󰆍")
-
         with Horizontal (id = "main") :
             with Vertical (id = "sidebar") :
                 fe = FileExplorer (Path ("."))
@@ -86,14 +104,27 @@ class Kable (App) :
             yield TextArea (self.initial_text, show_line_numbers = True, id = "editor")
             
         with Horizontal (id = "status_bar") :
+            if self.current_branch :
+                yield Label (" main", id = "branch")
+                yield Label (" ", id = "divider")
             yield Label (get_icon_and_file (self.current_file), id = "filename")
             yield Label ("", classes = "spacer")
             yield Label ("1:1", id = "location")
+            yield Label ("󱑂 00:00", id = "clock")
+    
+    def update_status_bar (self) -> None :
+        self.current_branch = run_git_command ("branch", "--show-current")
+        self.query_one ("#filename", Label).update (get_icon_and_file (self.current_file))
+        if self.current_branch.strip ():
+            self.query_one ("#branch", Label).update (" " + self.current_branch + " ")
+        self.query_one ("#location", Label).update ("1:1")
+        self.on_text_area_selection_changed ()
 
     def on_file_explorer_file_clicked (self, event : FileExplorer.FileClicked) -> None :
         self.action_quit (should_exit = False)
         self.current_file = cast (Path, event.path)
-        self.query_one ("#filename", Label).update (get_icon_and_file (self.current_file))
+        self.update_status_bar ()
+
         editor = self.query_one ("#editor", TextArea)
         editor.text = self.current_file.read_text (encoding = "utf-8")
 

@@ -11,6 +11,26 @@ project adheres to
 
 -
 
+## [0.4.2] - 2026-06-03
+
+## Changed
+
+- Metadata in `uv.lock` for easier package installation.
+
+### Added
+
+- Added explorer hidden persistence so the sidebar hide/show state is saved and
+restored correctly from `main/config.json`.
+- Git branch name being shown in the status bar if found.
+
+### Fixed
+
+- Explorer toggle shortcut not working while the editor is focused.
+
+### Removed
+
+- Hidden items being shown in the explorer.
+
 ## [0.4.1] - 2026-06-02
 
 ### Added
@@ -140,7 +160,8 @@ project adheres to
 - Initial project documentation.
 - Repository published at <https://github.com/python-neo/kable>.
 
-[Unreleased]: https://github.com/python-neo/kable/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/python-neo/kable/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/python-neo/kable/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/python-neo/kable/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/python-neo/kable/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/python-neo/kable/compare/v0.3.0...v0.3.1

@@ -19,7 +19,7 @@ Screen {
     background: transparent;
 }
 
-#explorer.hidden {
+#sidebar.hidden {
     display: none;
 }
 

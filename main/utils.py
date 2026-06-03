@@ -1,8 +1,8 @@
-from hashlib import sha256
-from pathlib import Path
-from typing import Callable
-from json import JSONDecodeError, dump, load
 import sys
+from hashlib import sha256
+from json import JSONDecodeError, dump, load
+from pathlib import Path
+from subprocess import CalledProcessError, run
 
 
 def get_icon_and_file (file : Path) -> str :
@@ -62,9 +62,17 @@ def safe_file_write (file : Path, data, json : bool = False) :
     try :
         if not json :
             file.write_text (data, encoding = "utf-8")
+            return
         with file.open ("w", encoding = "utf-8") as f : return dump (data, f, indent = 4)
 
     except PermissionError :
         sys.exit ("Permission denied. Try running Kable with administrative privilages.")
     except (OSError, JSONDecodeError, UnicodeError) :
         sys.exit (f"ERROR: File {file} cannot be written to.")
+
+def run_git_command (*args) -> str :
+    try :
+        result = run (["git", *args], capture_output = True, text = True, check = True)
+        return result.stdout.strip ()
+    except CalledProcessError :
+        return ""

@@ -7,8 +7,7 @@ easiest to review and build on.
 
 ## Project Direction
 
-Kable is a Python terminal IDE built around Textual. For now,
-application code lives in `main` while the project structure settles.
+Kable is a Python terminal IDE built around Textual. The project code lives in `/main`
 
 ## Ways to Contribute
 
@@ -37,9 +36,9 @@ changed in plain language.
 Examples:
 
 ```text
-Add initial terminal app scaffold
+Added initial terminal app scaffold
 Document development setup
-Fix editor tab close behavior
+Fixed editor tab close behavior
 ```
 
 ## Pull Requests

@@ -1,3 +1,4 @@
+from ctypes import windll
 from pathlib import Path
 
 from textual.containers import Horizontal, Vertical
@@ -32,6 +33,7 @@ class FileExplorer (Tree) :
         items = sorted (path.iterdir (), key = lambda x : (not x.is_dir (), x.name.lower ()))
 
         for item in items :
+            if self.ishidden (item) : continue
             if item.is_dir () :
                 child = node.add (get_icon_and_file (item), expand = False, data = item)
                 try :
@@ -50,6 +52,10 @@ class FileExplorer (Tree) :
             event.node.toggle ()
             return
         self.post_message (self.FileClicked (path))
+
+    def ishidden (self, path : Path) :
+        attrs = windll.kernel32.GetFileAttributesW (str (path))
+        return attrs != -1 and (attrs & 2) != 0
 
 class Confirm (ModalScreen [bool]) :
     def __init__ (self, prompt : str) :
