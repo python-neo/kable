@@ -1,15 +1,15 @@
-import sys
 from hashlib import sha256
 from json import JSONDecodeError, dump, load
 from pathlib import Path
-from subprocess import CalledProcessError, run
+from subprocess import CalledProcessError, CompletedProcess, run
 
 
 def get_icon_and_file (file : Path) -> str :
-    if file.is_dir () : return file.name
+    if file.is_dir () :
+        return file.name
 
-    name, ext = file.name, file.suffix.lower ()
-
+    name = file.name
+    ext = file.suffix.lower ()
     special = {
         ".gitignore" : "󰊢",
         ".gitkeep" : "󰊢",
@@ -33,46 +33,54 @@ def get_icon_and_file (file : Path) -> str :
         ".zip" : "󰗄",
     }
 
-    return f"{icons.get (ext, "󰈔")} {name}"
+    return f"{icons.get (ext, '󰈔')} {name}"
+
 
 def checksum (text : str | bytes) -> str :
-    hasher, data = sha256 (), text.encode ("utf-8") if isinstance (text, str) else text
+    hasher = sha256 ()
+    data = text.encode ("utf-8") if isinstance (text, str) else text
 
     for start in range (0, len (data), 8192) :
-        hasher.update (data [start:start + 8192])
-        
+        hasher.update (data [start : start + 8192])
+
     return hasher.hexdigest ()
 
-def safe_file_read (file : Path, json : bool = False) :
+
+def safe_file_read (file : Path, json : bool = False, exit : bool = True) :
     if file is not None :
         try :
             if not json : return file.read_text (encoding = "utf-8")
             with file.open ("r", encoding = "utf-8") as f : return load (f)
 
         except PermissionError :
-            sys.exit ("Permission denied. Try running Kable with administrative privilages.")
+            if not exit : return None
+            raise Exception ("Permission denied. Try running Kable with administrative privilages.") from None
 
         except (OSError, JSONDecodeError, UnicodeError) :
-            sys.exit (f"ERROR: File {file} not found or cannot be read.") 
+            if not exit : return None
+            raise Exception (f"ERROR: File {file} not found or cannot be read.") from None
 
-    else :
-        return ""
 
 def safe_file_write (file : Path, data, json : bool = False) :
     try :
-        if not json :
-            file.write_text (data, encoding = "utf-8")
+        if json :
+            if data is None :
+                return
+            with file.open ("w", encoding = "utf-8") as handle :
+                dump (data, handle, indent = 4)
             return
-        with file.open ("w", encoding = "utf-8") as f : return dump (data, f, indent = 4)
+
+        file.write_text (data, encoding = "utf-8")
 
     except PermissionError :
-        sys.exit ("Permission denied. Try running Kable with administrative privilages.")
+        raise Exception ("Permission denied. Try running Kable with administrative privilages.") from None
     except (OSError, JSONDecodeError, UnicodeError) :
-        sys.exit (f"ERROR: File {file} cannot be written to.")
+        raise Exception (f"ERROR: File {file} cannot be written to.") from None
 
-def run_git_command (*args) -> str :
+
+def run_git_command (*args, return_process : bool = False) -> str | CompletedProcess | CalledProcessError :
     try :
-        result = run (["git", *args], capture_output = True, text = True, check = True)
-        return result.stdout.strip ()
-    except CalledProcessError :
-        return ""
+        result = run (["git", *args], capture_output = True, text = True)
+        return result if return_process else result.stdout.strip ()
+    except CalledProcessError as exc :
+        return exc if return_process else ""

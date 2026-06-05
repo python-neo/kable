@@ -11,6 +11,28 @@ project adheres to
 
 -
 
+## [0.5.0] - 2026-06-04
+
+### Added
+
+- Package exports in `main/__init__.py` for public API.
+- Git caching system to batch git operations.
+- File existence validation on application startup.
+
+### Changed
+
+- Sidebar width increased from 25 to 35 characters to accommodate status indicators.
+- Error handling refactored from `sys.exit()` to exception-based with try-except
+ blocks.
+- Error notifications via `.notify()` for user-friendly error display.
+
+### Fixed
+
+- File existence validation on application startup.
+- Git ignore coloring logic no longer marks all files/folders as ignored.
+- Untracked files now display with green color for Added (A) status.
+- File validation errors now display gracefully instead of crashing.
+
 ## [0.4.2] - 2026-06-03
 
 ## Changed
@@ -160,7 +182,8 @@ restored correctly from `main/config.json`.
 - Initial project documentation.
 - Repository published at <https://github.com/python-neo/kable>.
 
-[Unreleased]: https://github.com/python-neo/kable/compare/v0.4.2...HEAD
+[Unreleased]: https://github.com/python-neo/kable/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/python-neo/kable/compare/v0.4.2...v0.5.0
 [0.4.2]: https://github.com/python-neo/kable/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/python-neo/kable/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/python-neo/kable/compare/v0.3.1...v0.4.0
