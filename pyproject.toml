@@ -23,7 +23,7 @@ classifiers = [
 dependencies = [
     "textual>=8.2.7",
     "rich>=15.0.0",
-    "ruff>=0.15.15",
+    "ruff>=0.15.16",
 ]
 
 [project.urls]
@@ -34,7 +34,7 @@ Contributing = "https://github.com/python-neo/kable/blob/main/CONTRIBUTING.md"
 
 [project.optional-dependencies]
 dev = [
-    "ruff>=0.12.0",
+    "ruff>=0.15.16",
 ]
 
 [project.scripts]
