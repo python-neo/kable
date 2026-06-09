@@ -23,12 +23,30 @@ COLOR_MODIFIED = "#d68e34"
 
 
 class FileExplorer (Tree) :
+    """
+    A file explorer widget with Git-aware styling and hidden file filtering.
+    """
+
     class FileClicked (Message) :
+        """
+        Message posted when a file is selected.
+        """
+
         def __init__ (self, path : Path) -> None :
+            """
+            Initialize a file selection message.
+
+            :param path: Path of the selected file.
+            """
             self.path = path
             super ().__init__ ()
 
     def __init__ (self, root : Path) :
+        """
+        Initialize the file explorer.
+
+        :param root: Root directory to display.
+        """
         super ().__init__ (root.name)
         self.root_path = root
         self.ignored_cache : set [Path] = set ()
@@ -36,6 +54,9 @@ class FileExplorer (Tree) :
         self.hidden_cache : dict [Path, bool] = {}
 
     def on_mount (self) -> None :
+        """
+        Load Git metadata and build the file tree.
+        """
         self.show_root = False
         try :
             self._load_git_cache ()
@@ -47,6 +68,13 @@ class FileExplorer (Tree) :
             )
 
     def build_tree (self, node : TreeNode, path : Path, ignore : bool = False) -> None :
+        """
+        Recursively populate the tree view.
+
+        :param node: Parent tree node.
+        :param path: Directory being traversed.
+        :param ignore: Whether descendants should be treated as ignored.
+        """
         items = sorted (path.iterdir (), key = lambda item : (not item.is_dir (), item.name.lower ()))
 
         for item in items :
@@ -70,6 +98,13 @@ class FileExplorer (Tree) :
                 self.add_file_node (node, item, is_ignored)
 
     def add_file_node (self, node : TreeNode, file_path : Path, is_ignored : bool = False) -> None :
+        """
+        Add a file node to the tree.
+
+        :param node: Parent tree node.
+        :param file_path: Path to the file.
+        :param is_ignored: Whether the file is Git ignored.
+        """
         status = self.get_status (file_path)
         label = get_icon_and_file (file_path)
         label_cut = label if len (label) <= 33 else label [:30] + "..."
@@ -77,6 +112,12 @@ class FileExplorer (Tree) :
         node.add_leaf (Text (label_cut, style = style), data = file_path)
 
     def _file_style (self, status : str) -> str :
+        """
+        Determine the display color for a file.
+
+        :param status: Git status code.
+        :return: Hex color string.
+        """
         if status == "A" :
             return COLOR_GREEN
         if status == "M" :
@@ -84,6 +125,12 @@ class FileExplorer (Tree) :
         return COLOR_WHITE
 
     def is_git_ignored (self, path : Path) -> bool :
+        """
+        Check whether a path is ignored by Git.
+
+        :param path: Path to check.
+        :return: True if the path is ignored.
+        """
         if path in self.ignored_cache :
             return True
         if path.is_dir () :
@@ -92,6 +139,14 @@ class FileExplorer (Tree) :
         return False
 
     def on_tree_node_selected (self, event : Tree.NodeSelected) -> None :
+        """
+        Handle tree node selection.
+
+        Directories are expanded or collapsed. Files emit a
+        :class:`FileClicked` message.
+
+        :param event: Tree selection event.
+        """
         path = event.node.data
         if not isinstance (path, Path) :
             return
@@ -103,6 +158,9 @@ class FileExplorer (Tree) :
         self.post_message (self.FileClicked (path))
 
     def _load_git_cache (self) -> None :
+        """
+        Populate the Git ignore and status caches.
+        """
         ignored_output = run_git_command ("ls-files", "--others", "--exclude-standard", "--ignored")
         if isinstance (ignored_output, str) and ignored_output :
             for line in ignored_output.splitlines () :
@@ -117,7 +175,7 @@ class FileExplorer (Tree) :
             for line in status_output.splitlines () :
                 line = line.strip ()
                 status_code = line.split (" ") [0]
-                if status_code.strip ():
+                if status_code.strip () :
                     try :
                         path = self.root_path / line.split (" ") [1]
                         status = "A" if "??" in status_code else "M"
@@ -126,6 +184,14 @@ class FileExplorer (Tree) :
                         continue
 
     def ishidden (self, path : Path) -> bool :
+        """
+        Check whether a file or directory is hidden.
+
+        On Windows this uses the hidden file attribute.
+
+        :param path: Path to check.
+        :return: True if the path is hidden.
+        """
         if windll is None :
             return False
         if path not in self.hidden_cache :
@@ -134,14 +200,35 @@ class FileExplorer (Tree) :
         return self.hidden_cache [path]
 
     def get_status (self, path : Path) -> str :
+        """
+        Retrieve the cached Git status of a file.
+
+        :param path: File path.
+        :return: Git status code or an empty string.
+        """
         return self.status_cache.get (path, "")
 
+
 class Confirm (ModalScreen [bool]) :
+    """
+    Modal confirmation dialog.
+    """
+
     def __init__ (self, prompt : str) -> None :
+        """
+        Initialize the confirmation dialog.
+
+        :param prompt: Message displayed to the user.
+        """
         self.prompt = prompt
         super ().__init__ ()
 
     def compose (self) -> ComposeResult :
+        """
+        Create the dialog layout.
+
+        :return: Widgets that make up the dialog.
+        """
         with Vertical (id = "confirm_box") :
             yield Label (self.prompt)
             with Horizontal (id = "confirm_buttons") :
@@ -149,4 +236,12 @@ class Confirm (ModalScreen [bool]) :
                 yield Button ("No", id = "no")
 
     def on_button_pressed (self, event : Button.Pressed) -> None :
+        """
+        Handle confirmation button presses.
+
+        Selecting ``Yes`` dismisses the dialog with ``True``.
+        Selecting ``No`` dismisses the dialog with ``False``.
+
+        :param event: Button press event.
+        """
         self.dismiss (event.button.id == "yes")

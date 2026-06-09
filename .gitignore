@@ -11,6 +11,9 @@ site/
 .eggs/
 pip-wheel-metadata/
 
+# Sphinx
+docs/build/
+
 # Virtual environments
 .venv/
 venv/
@@ -38,8 +41,11 @@ htmlcov/
 Thumbs.db
 desktop.ini
 
+# Logs
+*.log
+
 # Local state
-main/config.json
+*config.json
 
 # Textual local/dev state
 .textual/

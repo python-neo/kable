@@ -72,17 +72,34 @@ kable <filename>
 ## Repository Layout
 
 ```text
-..
-+-- .github/
-+-- main/
-+-- .gitignore
-+-- .python-version
-+-- CHANGELOG.md
-+-- CONTRIBUTING.md
-+-- LICENSE
-+-- pyproject.toml
-+-- README.md
-+-- uv.lock
+.
+├── .github/
+│   └── workflows/
+├── docs/
+│   ├── source/
+│   │   ├── _static/
+│   │   ├── _templates/
+│   │   ├── conf.py
+│   │   ├── index.rst
+│   │   ├── kable.rst
+│   │   └── modules.rst
+│   ├── Makefile
+│   └── make.bat
+├── kable/
+│   ├── editor.py
+│   ├── explorer.py
+│   ├── main.py
+│   ├── utils.py
+│   ├── config.json
+│   ├── styles.txt
+│   └── __init__.py
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── LICENSE.md
+├── pyproject.toml
+├── README.md
+├── uv.lock
+└── .python-version
 ```
 
 ## Maintainers

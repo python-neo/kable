@@ -11,6 +11,20 @@ project adheres to
 
 -
 
+## [0.5.1] - 2026-06-09
+
+### Added
+
+- New `docs` workflow to publish docs to GitHub Pages.
+- Sphinx integration to create documentation.
+- New docs section in pyproject.toml.
+
+### Changed
+
+- Moved the editor widget into a seperate file.
+- Added docstrings to evry class and function.
+- Updated uv.lock and README.md.
+
 ## [0.5.0] - 2026-06-04
 
 ### Added
@@ -182,7 +196,8 @@ restored correctly from `main/config.json`.
 - Initial project documentation.
 - Repository published at <https://github.com/python-neo/kable>.
 
-[Unreleased]: https://github.com/python-neo/kable/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/python-neo/kable/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/python-neo/kable/compare/v0.5.0..v0.5.1
 [0.5.0]: https://github.com/python-neo/kable/compare/v0.4.2...v0.5.0
 [0.4.2]: https://github.com/python-neo/kable/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/python-neo/kable/compare/v0.4.0...v0.4.1
